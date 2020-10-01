@@ -5,7 +5,7 @@ import { sizes } from '../styles/variables'
 import Pattern from '../resources/pattern-2.jpg'
 import IconTick from '../resources/icon-tick-2.svg'
 
-const Styled = styled.div<{ direction?: string; flexDirectionColumnForImgContainer?: boolean }>`
+const Styled = styled.div<{ direction?: string; flexDirectionColumnForImgContainer?: boolean; opposite?: boolean }>`
   display: flex;
   justify-content: space-between;
   position: relative;
@@ -38,7 +38,7 @@ const Styled = styled.div<{ direction?: string; flexDirectionColumnForImgContain
 
   &:nth-of-type(2n) {
     @media (min-width: 1141px) {
-      flex-direction: row-reverse;
+      flex-direction: ${({ opposite }) => (opposite ? 'reverse' : 'row-reverse')};
     }
 
     @media (min-width: 1141px) {
@@ -52,6 +52,12 @@ const Styled = styled.div<{ direction?: string; flexDirectionColumnForImgContain
           transform: translateX(-5rem);
         }
       }
+    }
+  }
+
+  &:nth-of-type(2n + 1) {
+    @media (min-width: 1141px) {
+      flex-direction: ${({ opposite }) => (opposite ? 'row-reverse' : 'reverse')};
     }
   }
 
@@ -212,6 +218,10 @@ const Styled = styled.div<{ direction?: string; flexDirectionColumnForImgContain
     }
   }
 
+  p + .text-list {
+    margin-top: 2rem;
+  }
+
   .text-list {
     margin-top: 0;
     font-size: inherit;
@@ -238,13 +248,20 @@ export interface FeatureCardProps {
   Buttons?: any
   icon?: string | JSX.Element
   iconTitle?: string | JSX.Element
+  opposite?: boolean
+  Figure?: () => JSX.Element
 }
 
-const FeatureCard = ({ src, alt, Graphic, title, text, direction, id, featuresList, Buttons }: FeatureCardProps) => {
+const FeatureCard = ({ src, alt, Graphic, title, text, direction, id, featuresList, Buttons, Figure, opposite }: FeatureCardProps) => {
   const [renderedGraphic, setRenderedGraphic] = useState<string>('')
 
   return (
-    <Styled className="row" direction={direction} flexDirectionColumnForImgContainer={featuresList && featuresList.length ? true : false}>
+    <Styled
+      className="row"
+      direction={direction}
+      flexDirectionColumnForImgContainer={featuresList && featuresList.length ? true : false}
+      opposite={opposite}
+    >
       <div className="img-container in-view">
         {Graphic ? <Graphic renderedGraphic={renderedGraphic} /> : null}
         {src ? <img src={src} alt={alt} style={featuresList && featuresList.length ? { transform: 'scale(.9)' } : {}} /> : null}
@@ -255,6 +272,7 @@ const FeatureCard = ({ src, alt, Graphic, title, text, direction, id, featuresLi
             ))}
           </ul>
         ) : null}
+        {Figure ? <Figure /> : null}
       </div>
       <div className="text">
         <h2>{title}</h2>
